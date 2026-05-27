@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
+  other: {
+    'admaven-placement': 'Bqjw6qjsH',
+  },
 }
 
 export default function RootLayout({
