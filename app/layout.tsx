@@ -27,9 +27,6 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
-  other: {
-    'admaven-placement': 'Bqjw6qjsH',
-  },
 }
 
 export default function RootLayout({
@@ -40,11 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <head>
-        <meta
-          name="admaven-placement"
-          content="Bqjw6qjsH"
-        />
-        <script async src="/Bqjw6qjsH.js"></script>
+        <script async="async" data-cfasync="false" src="https://pl29569663.effectivecpmnetwork.com/d3ee70cf47b025074ce490bacad3b6e3/invoke.js"></script>
       </head>
       <body className="font-sans antialiased">
         {children}
