@@ -40,6 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <head>
+        <meta
+          name="admaven-placement"
+          content="Bqjw6qjsH"
+        />
         <script async src="/Bqjw6qjsH.js"></script>
       </head>
       <body className="font-sans antialiased">
