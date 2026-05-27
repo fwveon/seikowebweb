@@ -44,14 +44,23 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect admin routes - redirect to login if not authenticated
-  if (
-    request.nextUrl.pathname.startsWith('/admin') &&
-    !user
-  ) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
+  const ADMIN_EMAIL = 'rhianamedrano5@gmail.com'
+
+  // Protect admin routes
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    // Redirect to login if not authenticated
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/auth/login'
+      return NextResponse.redirect(url)
+    }
+
+    // Redirect to home if not admin
+    if (user.email !== ADMIN_EMAIL) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse
