@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -37,9 +38,19 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <head>
-        <script async="async" data-cfasync="false" src="https://pl29569663.effectivecpmnetwork.com/d3ee70cf47b025074ce490bacad3b6e3/invoke.js"></script>
+        <Script 
+          async 
+          data-cfasync="false" 
+          src="https://pl29569663.effectivecpmnetwork.com/d3ee70cf47b025074ce490bacad3b6e3/invoke.js"
+          strategy="afterInteractive"
+        />
+        <Script 
+          src="https://pl29569715.effectivecpmnetwork.com/78/4a/05/784a05af05be9d9dfa3211db7635e8ce.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body className="font-sans antialiased">
+        <div id="container-d3ee70cf47b025074ce490bacad3b6e3"></div>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
