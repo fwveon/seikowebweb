@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X } from 'lucide-react'
+import { X, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,6 +25,9 @@ export function VideoModal({ isOpen, onClose, onSubmit, isLoading, title, initia
     youtube_url: '',
     script_url: '',
   })
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>('')
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (initialData) {
@@ -35,6 +38,7 @@ export function VideoModal({ isOpen, onClose, onSubmit, isLoading, title, initia
         youtube_url: initialData.youtube_url,
         script_url: initialData.script_url,
       })
+      setThumbnailPreview(initialData.thumbnail_url)
     } else {
       setFormData({
         title: '',
@@ -43,8 +47,50 @@ export function VideoModal({ isOpen, onClose, onSubmit, isLoading, title, initia
         youtube_url: '',
         script_url: '',
       })
+      setThumbnailPreview('')
     }
+    setThumbnailFile(null)
   }, [initialData, isOpen])
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setThumbnailFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const uploadThumbnail = async () => {
+    if (!thumbnailFile) return
+
+    setIsUploading(true)
+    try {
+      const formDataForUpload = new FormData()
+      formDataForUpload.append('file', thumbnailFile)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataForUpload,
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const { url } = await response.json()
+      setFormData({ ...formData, thumbnail_url: url })
+      setThumbnailFile(null)
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Failed to upload thumbnail')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -103,16 +149,38 @@ export function VideoModal({ isOpen, onClose, onSubmit, isLoading, title, initia
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="thumbnail_url" className="text-foreground">Thumbnail URL *</Label>
-            <Input
-              id="thumbnail_url"
-              type="url"
-              value={formData.thumbnail_url}
-              onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-              placeholder="https://img.youtube.com/vi/..."
-              required
-              className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-            />
+            <Label htmlFor="thumbnail_url" className="text-foreground">Thumbnail Image *</Label>
+            {thumbnailPreview && (
+              <div className="mb-3">
+                <img 
+                  src={thumbnailPreview} 
+                  alt="Thumbnail preview" 
+                  className="w-full h-40 object-cover rounded-lg border border-border"
+                />
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Input
+                id="thumbnail_url"
+                type="file"
+                accept="image/*"
+                onChange={handleThumbnailChange}
+                disabled={isUploading}
+                className="bg-input border-border text-foreground"
+              />
+              <Button
+                type="button"
+                onClick={uploadThumbnail}
+                disabled={!thumbnailFile || isUploading}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {isUploading ? 'Uploading...' : 'Upload'}
+              </Button>
+            </div>
+            {formData.thumbnail_url && !thumbnailFile && (
+              <p className="text-sm text-muted-foreground">Current thumbnail set ✓</p>
+            )}
           </div>
 
           <div className="space-y-2">
